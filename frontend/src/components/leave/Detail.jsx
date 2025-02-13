@@ -1,16 +1,18 @@
+
+
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const View = () => {
-  const [employee, setEmployee] = useState(null);
+const Detail = () => {
+  const [leave, setLeave] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchEmployee = async () => {
+    const fetchLeave = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/employee/${id}`,
+          `http://localhost:4000/api/leave/detail/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -21,7 +23,7 @@ const View = () => {
         console.log(response.data);
 
         if (response.data.success) {
-          setEmployee(response.data.employee);
+          setLeave(response.data.leave);
         }
       } catch (error) {
         console.log(error);
@@ -31,20 +33,24 @@ const View = () => {
       }
     };
 
-    fetchEmployee();
+    fetchLeave();
   }, []);
+
+  const changeStatus=async(id,status)=>{
+     
+  }
 
   return (
     <>
-      {employee ? (
-        <div className="max-w-4xl mx-auto mt-10 bg-white p-6 md:p-10 rounded-lg shadow-lg">
+      {leave ? (
+        <div className="max-w-4xl mx-auto mt-10 bg-gray-100 p-6 md:p-10 rounded-lg shadow-lg">
           <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
-            Employee Details
+            Leave Details
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="flex justify-center">
               <img
-                src={`http://localhost:4000/${employee.userId.profileImage}`}
+                src={`http://localhost:4000/${leave.employeeId.userId.profileImage}`}
                 alt="Employee"
                 className="rounded-full border-4 border-gray-300 w-40 h-40 md:w-52 md:h-52 object-cover"
               />
@@ -53,7 +59,7 @@ const View = () => {
               <div className="flex items-center space-x-3">
                 <p className="text-lg font-semibold text-gray-700">Name:</p>
                 <p className="font-medium text-gray-600">
-                  {employee.userId.name}
+                  {leave.employeeId.userId.name}
                 </p>
               </div>
               <div className="flex items-center space-x-3">
@@ -61,28 +67,57 @@ const View = () => {
                   Employee ID:
                 </p>
                 <p className="font-medium text-gray-600">
-                  {employee.employeeId}
+                  {leave.employeeId.employeeId}
                 </p>
               </div>
               <div className="flex items-center space-x-3">
-                <p className="text-lg font-semibold text-gray-700">Gender:</p>
-                <p className="font-medium text-gray-600">{employee.gender}</p>
+                <p className="text-lg font-semibold text-gray-700">
+                  Leave Type:
+                </p>
+                <p className="font-medium text-gray-600">
+                  {leave.leaveType}
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-lg font-semibold text-gray-700">Reason:</p>
+                <p className="font-medium text-gray-600">{leave.reason}</p>
               </div>
               <div className="flex items-center space-x-3">
                 <p className="text-lg font-semibold text-gray-700">
                   Department:
                 </p>
                 <p className="font-medium text-gray-600">
-                  {employee.department.dep_name}
+                  {leave.employeeId.department.dep_name}
                 </p>
               </div>
               <div className="flex items-center space-x-3">
                 <p className="text-lg font-semibold text-gray-700">
-                  Marital Status:
+                    Start Date:
                 </p>
                 <p className="font-medium text-gray-600">
-                  {employee.maritalStatus}
+                  {new Date(leave.startDate).toLocaleDateString()}
                 </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-lg font-semibold text-gray-700">
+                    End Date:
+                </p>
+                <p className="font-medium text-gray-600">
+                  {new Date(leave.endDate).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <p className="text-lg font-semibold text-gray-700">
+                  {leave.status === "Pending" ? "Action:":"Status:"}
+                </p>
+                {leave.status ==="Pending"?(
+                  <div className="flex space-x-2">
+                    <button className="px-4 py-1 bg-green-500 hover:bg-green-600 rounded-lg"
+                    onClick={()=>changeStatus(leave._id,"Approved")}>Approve</button>
+                    <button className="px-4 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg"
+                    onClick={()=>changeStatus(leave._id,"Rejected")}>Reject</button>
+                  </div>):<p className="font-medium"> {leave.status}</p>}
+               
               </div>
             </div>
           </div>
@@ -96,4 +131,4 @@ const View = () => {
   );
 };
 
-export default View;
+export default Detail;

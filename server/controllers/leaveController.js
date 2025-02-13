@@ -37,12 +37,65 @@ const getLeaves =async(req,res)=>{
         return res.status(200).json({success:true,leaves})
     } 
     catch (error) {    
-        return res.status(500).json({success:false,error:" get salary details server error"})
+        return res.status(500).json({success:false,error:" get leaves details server error"})
     }
 
 } 
 
+const getLeavess=async(req,res)=>{
+
+    try {
+        const leaves = await Leave.find().populate({
+            path:"employeeId",
+            populate:[
+                {
+                    path:'department',
+                    select:'dep_name'
+                },
+                {
+                    path:'userId',
+                    select:'name'
+                }
+            ]
+
+        })
+        
+        return res.status(200).json({success:true,leaves})
+    } 
+    catch (error) {    
+        return res.status(500).json({success:false,error:" get leavess details server error"})
+    }
+
+}
+
+
+const getLeaveDetail =async(req,res)=>{
+
+    try {
+        const {id} =req.params
+        const leave = await Leave.findById({_id:id}).populate({
+            path:"employeeId",
+            populate:[
+                {
+                    path:'department',
+                    select:'dep_name'
+                },
+                {
+                    path:'userId',
+                    select:'name profileImage'
+                }
+            ]
+
+        })
+        
+        return res.status(200).json({success:true,leave})
+    } 
+    catch (error) {    
+        return res.status(500).json({success:false,error:" get LeaveDetail server error"})
+    }
+}
 
 
 
-export {addLeave,getLeaves}
+
+export {addLeave,getLeaves,getLeavess,getLeaveDetail}
